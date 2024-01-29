@@ -39,7 +39,7 @@ QString sockets[] = {
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow),conManager(new QNetworkAccessManager(this)) {
     //установка исходного виджета !!!ТУТ НУЖНА СЕССИЯ ЧТОБЫ ПОНИМАТЬ ЧТО ВКЛЮЧАТЬ!!!
-    ui->setupUi(this);
+    ui->setupUi(this);//добавить трекинг за верхней областью окна, дабы можно было двигать
     ui->stackedWidget->setCurrentWidget(ui->signUp);
 
     //безрамочный режим тупо лучше свои сделать кнопки
@@ -57,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->verPasswordLine->setEchoMode(QLineEdit::Password);
 
     //все коннкеторы связнные с окном регистрации
-    connect(ui->conButton, SIGNAL(clicked()),SLOT(on_conButton_clicked()));
+    connect(ui->conButton, SIGNAL(clicked()),SLOT(on_conButton_clicked()));//бесполезный коннектор тк есть функция баттон клик, но убрать
     connect(ui->conButton, SIGNAL(connectReady()),SLOT(connectServer()));
     connect(conManager,SIGNAL(finished()), SLOT(connectAnswer(QNetworkReply*)));
 
@@ -72,7 +72,7 @@ void MainWindow::connectServer() {
     conManager = new QNetworkAccessManager(this);
 
     QUrl url; //НАДО ДОБАВИТЬ АДРЕС!!!!!!!!!!!!!!!!!!!!!!!!!
-    QNetworkRequest request(url);
+    QNetworkRequest request(url);// можно сделать более читабельным ссылка на stackOverflow в тг вечером почитать
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
 
     QByteArray regdata;
@@ -96,7 +96,7 @@ void MainWindow::connectAnswer(QNetworkReply *reply) {
 
 void MainWindow::on_conButton_clicked() {
     //проверка паролей на сходство и юзернейма
-    QString usName = " ", password = " ", vPassword = " ";
+    QString usName = " ", password = " ", vPassword = " ";//переменная юзернейма совершенно не нужна тк не используется в проверке, проверка будет на сервере
     usName=ui->logLine->text();
     password=ui->passwordLine->text();
     vPassword=ui->verPasswordLine->text();
