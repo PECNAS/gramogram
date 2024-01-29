@@ -29,10 +29,17 @@ private slots:
 
     void on_showButton_clicked();
 
+    void connectServer();
+
+    void connectAnswer(QNetworkReply* reply);
+
+signals:
+    void connectReady();
+    void finished();
 
 private:
     Ui::MainWindow *ui;
-    QNetworkAccessManager* manager;
+    QNetworkAccessManager* conManager;
     QSettings settings;
 };
 

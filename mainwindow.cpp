@@ -10,6 +10,8 @@
 #include <QUrl>
 #include <QSettings>
 #include <QByteArray>
+#include <QMessageBox>
+#include <QUrlQuery>
 
 QString error[] = {
     "Username and/or password is not correct. Please try again.",
@@ -28,11 +30,14 @@ QString debug[] = {
     "Window max",
     "Window normal"
 };
-QString sockets[]{
-    "Connection to the server..."
+QString sockets[] = {
+    "Connection to the server...",
+    "Connection started",
+    "Cpnnection continuing",
+    "Connection done"
 };
 
-MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow),manager(new QNetworkAccessManager(this)) {
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow),conManager(new QNetworkAccessManager(this)) {
     //установка исходного виджета !!!ТУТ НУЖНА СЕССИЯ ЧТОБЫ ПОНИМАТЬ ЧТО ВКЛЮЧАТЬ!!!
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->signUp);
@@ -50,11 +55,44 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     //установил на пароли хуйню с точками так полезно
     ui->passwordLine->setEchoMode(QLineEdit::Password);
     ui->verPasswordLine->setEchoMode(QLineEdit::Password);
+
+    //все коннкеторы связнные с окном регистрации
+    connect(ui->conButton, SIGNAL(clicked()),SLOT(on_conButton_clicked()));
+    connect(ui->conButton, SIGNAL(connectReady()),SLOT(connectServer()));
+    connect(conManager,SIGNAL(finished()), SLOT(connectAnswer(QNetworkReply*)));
+
 }
 
 MainWindow::~MainWindow() {
     delete ui;
 }
+
+void MainWindow::connectServer() {
+    //создание объекта менеджера для работы с пост запросами
+    conManager = new QNetworkAccessManager(this);
+
+    QUrl url; //НАДО ДОБАВИТЬ АДРЕС!!!!!!!!!!!!!!!!!!!!!!!!!
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+
+    QByteArray regdata;
+    regdata.append("username="+ui->logLine->text().toUtf8());
+    regdata.append("password="+ui->passwordLine->text().toUtf8());
+
+    conManager->post(request,regdata);
+    qDebug()<<sockets[1];
+    emit finished(); //иммитируем сигнал финиш ответа дабы понять работает или нет
+}
+
+void MainWindow::connectAnswer(QNetworkReply *reply) {
+    qDebug()<<sockets[2];
+    QByteArray answer = reply->readAll();
+    QMessageBox::information(this,"Ответ от сервера:",QString::fromUtf8(answer),QMessageBox::Ok);
+    reply->close();
+    qDebug()<<sockets[3];
+}
+
+
 
 void MainWindow::on_conButton_clicked() {
     //проверка паролей на сходство и юзернейма
@@ -71,22 +109,12 @@ void MainWindow::on_conButton_clicked() {
         }
         else{
             ui->conLabel->setText(sockets[0]);
-
-            //создание объекта менеджера для работы с пост запросами
-            manager = new QNetworkAccessManager(this);
-            QUrl url(); //НАДО ДОБАВИТЬ АДРЕС!!!!!!!!!!!!!!!!!!!!!!!!!
-            QNetworkRequest request;
-            QByteArray regdata;
-            regdata.append("username="+ui->logLine->text().toUtf8());
-            regdata.append("password="+ui->passwordLine->text().toUtf8());
-
-            manager->post(request,regdata);
+            emit connectReady();
         }
     }
 
     //ui->stackedWidget->setCurrentWidget(ui->mainChat);
 }
-
 
 void MainWindow::on_closeButton_clicked() {
     this->close();
@@ -94,13 +122,13 @@ void MainWindow::on_closeButton_clicked() {
 }
 
 
-void MainWindow::on_hideButton_clicked(){
+void MainWindow::on_hideButton_clicked() {
     this->showMinimized();
     qDebug()<<debug[1];
 }
 
-void MainWindow::on_showButton_clicked(){
-    if(this->isFullScreen()){
+void MainWindow::on_showButton_clicked() {
+    if(this->isFullScreen()) {
         this->showNormal();
         qDebug()<<debug[3];
     } else {
