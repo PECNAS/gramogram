@@ -12,6 +12,6 @@ class TestAPIView(View):
 
 	@csrf_exempt
 	def post(self, request):
-		data = json.loads(request.body)
+		print(request.body)
 
-		return HttpResponse(data)
+		return HttpResponse("POST")
