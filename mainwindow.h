@@ -33,9 +33,10 @@ private slots:
 
     void connectAnswer(QNetworkReply* reply);
 
+    void openChat();
+
 signals:
     void connectReady();
-    void finished();
 
 private:
     Ui::MainWindow *ui;

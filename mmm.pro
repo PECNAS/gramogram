@@ -1,5 +1,6 @@
 QT  += core gui
 QT  += network
+QT  += core
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,4 +27,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     css/backGround.PNG \
-    css/style.css
+    css/signStyle.css

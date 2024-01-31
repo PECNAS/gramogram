@@ -9,9 +9,7 @@
 #include <QNetworkReply>
 #include <QUrl>
 #include <QSettings>
-#include <QByteArray>
 #include <QMessageBox>
-#include <QUrlQuery>
 
 QString error[] = {
     "Username and/or password is not correct. Please try again.",
@@ -25,29 +23,25 @@ QString error[] = {
     "Error occured. Please restart the program."
 };
 QString debug[] = {
-    "Window closed",
-    "Window hidden",
-    "Window max",
-    "Window normal"
-};
-QString sockets[] = {
+    "Main chat has been opened",
     "Connection to the server...",
     "Connection started",
-    "Cpnnection continuing",
-    "Connection done"
+    "Connection done",
+
+};
+QString sockets[] = {
+    "Connection has been successfully established",
+    "This username is already taken, try again",
+    "You are already signed up, log in"
 };
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow),conManager(new QNetworkAccessManager(this)) {
-    //установка исходного виджета !!!ТУТ НУЖНА СЕССИЯ ЧТОБЫ ПОНИМАТЬ ЧТО ВКЛЮЧАТЬ!!!
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->signUp);
-
-    //безрамочный режим тупо лучше свои сделать кнопки
     setWindowFlags(Qt::FramelessWindowHint);
 
-    //css стиль можно установить вообще на всё в файле так тупо легче
     QFile style;
-    style.setFileName("D:/QT/mmm/css/style.css");
+    style.setFileName("D:/QT/mmm/css/signStyle.css");
     style.open(QFile::ReadOnly);
     QString css = style.readAll();
     qApp->setStyleSheet(css);
@@ -57,9 +51,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->verPasswordLine->setEchoMode(QLineEdit::Password);
 
     //все коннкеторы связнные с окном регистрации
-    connect(ui->conButton, SIGNAL(clicked()),SLOT(on_conButton_clicked()));
-    connect(ui->conButton, SIGNAL(connectReady()),SLOT(connectServer()));
-    connect(conManager,SIGNAL(finished()), SLOT(connectAnswer(QNetworkReply*)));
+    connect(this, SIGNAL(connectReady()),this, SLOT(connectServer()));
 
 }
 
@@ -67,72 +59,88 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
+void MainWindow::openChat() {
+    ui->stackedWidget->setCurrentWidget(ui->mainChat);
+}
+
 void MainWindow::connectServer() {
+    QByteArray regdata;
+    regdata.append("username="+ui->logLine->text().toUtf8());
+    regdata.append("&");
+    regdata.append("password="+ui->passwordLine->text().toUtf8());
+
     //создание объекта менеджера для работы с пост запросами
     conManager = new QNetworkAccessManager(this);
 
-    QUrl url; //НАДО ДОБАВИТЬ АДРЕС!!!!!!!!!!!!!!!!!!!!!!!!!
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+    QUrl url("https://bb96-95-105-74-45.ngrok-free.app/api/v1/");
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setHeader( QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
 
-    QByteArray regdata;
-    regdata.append("username="+ui->logLine->text().toUtf8());
-    regdata.append("password="+ui->passwordLine->text().toUtf8());
+    //settings.setValue("endpoint_url"," ");
 
     conManager->post(request,regdata);
-    qDebug()<<sockets[1];
-    emit finished(); //иммитируем сигнал финиш ответа дабы понять работает или нет
+    connect(conManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(connectAnswer(QNetworkReply*)));
 }
 
 void MainWindow::connectAnswer(QNetworkReply *reply) {
-    qDebug()<<sockets[2];
     QByteArray answer = reply->readAll();
-    QMessageBox::information(this,"Ответ от сервера:",QString::fromUtf8(answer),QMessageBox::Ok);
+    qDebug()<<answer;
     reply->close();
-    qDebug()<<sockets[3];
+    if(answer == sockets[1]){
+        ui->conLabel->setText(sockets[1]);
+    }
+    else if (answer == sockets[2]){
+        ui->conLabel->setText(sockets[2]);
+    }
+    else if (answer == sockets[0]){
+        openChat();
+        qDebug()<<debug[0];
+    }
+    openChat();
 }
-
-
 
 void MainWindow::on_conButton_clicked() {
     //проверка паролей на сходство и юзернейма
-    QString usName = " ", password = " ", vPassword = " ";
-    usName=ui->logLine->text();
+    QString userName = " ", password = " ", vPassword = " ";//переменная юзернейма совершенно не нужна тк не используется в проверке, проверка будет на сервере
+    userName=ui->logLine->text();
     password=ui->passwordLine->text();
     vPassword=ui->verPasswordLine->text();
-    for(int i=0;i<password.length();++i){
-        if(password.length()>vPassword.length() || password.length()<vPassword.length()){
-            ui->conLabel->setText(error[4]);
-        }
-        else if(password.at(i)!=vPassword.at(i)){
+    if(userName.isEmpty() || password.isEmpty()){
+        ui->conLabel->setText(error[2]);
+    }
+    else if(vPassword.isEmpty()){
+        ui->conLabel->setText(error[5]);
+    }
+    else{
+        if(password.length() != vPassword.length()){
             ui->conLabel->setText(error[4]);
         }
         else{
-            ui->conLabel->setText(sockets[0]);
-            emit connectReady();
+            if(password != vPassword){
+                ui->conLabel->setText(error[4]);
+            }
+            else{
+                emit connectReady();
+            }
         }
     }
-
-    //ui->stackedWidget->setCurrentWidget(ui->mainChat);
 }
 
 void MainWindow::on_closeButton_clicked() {
     this->close();
-    qDebug()<<debug[0];
 }
 
 
 void MainWindow::on_hideButton_clicked() {
     this->showMinimized();
-    qDebug()<<debug[1];
 }
 
 void MainWindow::on_showButton_clicked() {
     if(this->isFullScreen()) {
         this->showNormal();
-        qDebug()<<debug[3];
-    } else {
+    }
+    else {
         this->showFullScreen();
-        qDebug()<<debug[2];
     }
 }
