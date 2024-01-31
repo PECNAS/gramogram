@@ -13,6 +13,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+constexpr QPoint kInvalidPoint(-1, -1);
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
@@ -35,13 +36,23 @@ private slots:
 
     void openChat();
 
+    void setSettings();
+
+    void mousePressEvent(QMouseEvent* event);
+
+    void mouseMoveEvent(QMouseEvent* event);
+
+
 signals:
     void connectReady();
+    void signalOpenChat();
+    void signSettings();
 
 private:
     Ui::MainWindow *ui;
     QNetworkAccessManager* conManager;
     QSettings settings;
+    QPoint pos_;
 };
 
 

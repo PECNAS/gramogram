@@ -27,4 +27,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     css/backGround.PNG \
-    css/signStyle.css
+    css/style.css
