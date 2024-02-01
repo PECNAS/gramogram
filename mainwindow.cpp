@@ -37,10 +37,35 @@ QString sockets[] = {
 };
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow),conManager(new QNetworkAccessManager(this)) {
+<<<<<<< HEAD
 
     connect(this, SIGNAL(signSettings()), this, SLOT(setSettings()));
     connect(this, SIGNAL(connectReady()),this, SLOT(connectServer()));
     connect(this, SIGNAL(signalOpenChat()), this, SLOT(openChat()));
+=======
+    //установка исходного виджета !!!ТУТ НУЖНА СЕССИЯ ЧТОБЫ ПОНИМАТЬ ЧТО ВКЛЮЧАТЬ!!!
+    ui->setupUi(this);//добавить трекинг за верхней областью окна, дабы можно было двигать
+    ui->stackedWidget->setCurrentWidget(ui->signUp);
+
+    //безрамочный режим тупо лучше свои сделать кнопки
+    setWindowFlags(Qt::FramelessWindowHint);
+
+    //css стиль можно установить вообще на всё в файле так тупо легче
+    QFile style;
+    style.setFileName("D:/QT/mmm/css/style.css");
+    style.open(QFile::ReadOnly);
+    QString css = style.readAll();
+    qApp->setStyleSheet(css);
+
+    //установил на пароли хуйню с точками так полезно
+    ui->passwordLine->setEchoMode(QLineEdit::Password);
+    ui->verPasswordLine->setEchoMode(QLineEdit::Password);
+
+    //все коннкеторы связнные с окном регистрации
+    connect(ui->conButton, SIGNAL(clicked()),SLOT(on_conButton_clicked()));//бесполезный коннектор тк есть функция баттон клик, но убрать
+    connect(ui->conButton, SIGNAL(connectReady()),SLOT(connectServer()));
+    connect(conManager,SIGNAL(finished()), SLOT(connectAnswer(QNetworkReply*)));
+>>>>>>> 879fb9f2d006f108edc7f4c801c28fd13c00ad3c
 
     emit signSettings();
 }
@@ -96,10 +121,20 @@ void MainWindow::connectServer() {
     //создание объекта менеджера для работы с пост запросами
     conManager = new QNetworkAccessManager(this);
 
+<<<<<<< HEAD
     QUrl url("https://ec8d-95-105-74-45.ngrok-free.app/api/v1/sign_up/");
     QNetworkRequest request;
     request.setUrl(url);
     request.setHeader( QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
+=======
+    QUrl url; //НАДО ДОБАВИТЬ АДРЕС!!!!!!!!!!!!!!!!!!!!!!!!!
+    QNetworkRequest request(url);// можно сделать более читабельным ссылка на stackOverflow в тг вечером почитать
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+
+    QByteArray regdata;
+    regdata.append("username="+ui->logLine->text().toUtf8());
+    regdata.append("password="+ui->passwordLine->text().toUtf8());
+>>>>>>> 879fb9f2d006f108edc7f4c801c28fd13c00ad3c
 
     //settings.setValue("endpoint_url"," ");
     connect(conManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(connectAnswer(QNetworkReply*)));
@@ -124,8 +159,13 @@ void MainWindow::connectAnswer(QNetworkReply *reply) {
 
 void MainWindow::on_conButton_clicked() {
     //проверка паролей на сходство и юзернейма
+<<<<<<< HEAD
     QString userName = " ", password = " ", vPassword = " ";//переменная юзернейма совершенно не нужна тк не используется в проверке, проверка будет на сервере
     userName=ui->logLine->text();
+=======
+    QString usName = " ", password = " ", vPassword = " ";//переменная юзернейма совершенно не нужна тк не используется в проверке, проверка будет на сервере
+    usName=ui->logLine->text();
+>>>>>>> 879fb9f2d006f108edc7f4c801c28fd13c00ad3c
     password=ui->passwordLine->text();
     vPassword=ui->verPasswordLine->text();
     if(userName.isEmpty() || password.isEmpty()){
