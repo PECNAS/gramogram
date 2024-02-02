@@ -1,10 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "ui_mainwindow.h"
 #include <QNetworkAccessManager>
 #include <QMainWindow>
 #include <QSettings>
-
+#include <QMouseEvent>
 
 class QNetworkReply;
 class QNetworkAccessManager;
@@ -13,7 +14,6 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-constexpr QPoint kInvalidPoint(-1, -1);
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
@@ -34,25 +34,41 @@ private slots:
 
     void connectAnswer(QNetworkReply* reply);
 
-    void openChat();
+    void sendMessage();
 
-    void setSettings();
+protected:
+    void mousePressEvent(QMouseEvent *event) {
+        if (event->button() == Qt::LeftButton && ui->toolWidget->underMouse()==1) {
+            oldPos = event->pos();
+        }
+    }
+    void mouseDoublePressEvent(QMouseEvent *event) {
+        if (event->button() == Qt::LeftButton && ui->toolWidget->underMouse()==1) {
+            if(this->isFullScreen()) {
+                this->showNormal();
+            }
+            else {
+                this->showFullScreen();
+            }
+        }
+    }
 
-    void mousePressEvent(QMouseEvent* event);
-
-    void mouseMoveEvent(QMouseEvent* event);
+    void mouseMoveEvent(QMouseEvent *event) {
+        QPoint delta = event->pos() - oldPos;
+        if(ui->toolWidget->underMouse()==1){
+            move(pos() + delta);
+        }
+    }
 
 
 signals:
     void connectReady();
-    void signalOpenChat();
-    void signSettings();
 
 private:
     Ui::MainWindow *ui;
     QNetworkAccessManager* conManager;
-    QSettings settings;
-    QPoint pos_;
+    QNetworkAccessManager* manager;
+    QPoint oldPos;
 };
 
 
