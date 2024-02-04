@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "sendmessage.h"
+#include "chat.h"
 
 #include <QWidget>
 #include <QFile>
@@ -12,6 +12,7 @@
 #include <QSettings>
 #include <QPoint>
 #include <QMouseEvent>
+#include <QPalette>
 
 QString error[] = {
     "Username and/or password is not correct. Please try again.",
@@ -37,9 +38,10 @@ QString sockets[] = {
 };
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow),conManager(new QNetworkAccessManager(this)) {
-
     ui->setupUi(this);
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
+    ui->passwordLine->setEchoMode(QLineEdit::Password);
+    ui->verPasswordLine->setEchoMode(QLineEdit::Password);
     ui->stackedWidget->setCurrentWidget(ui->signUp);
 
     QFile style;
@@ -48,22 +50,40 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     QString css = style.readAll();
     qApp->setStyleSheet(css);
 
-    connect(this, SIGNAL(connectReady()),this, SLOT(connectServer()));
+
+    connect(this, SIGNAL(connectReady()), this, SLOT(connectServer()));
+    connect(ui->conButton, SIGNAL(clicked()), this, SLOT(connectionButton()));
+    connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(closeButton()));
+    connect(ui->showButton, SIGNAL(clicked()), this, SLOT(showButton()));
+    connect(ui->hideButton, SIGNAL(clicked()), this, SLOT(hideButton()));
+    connect(ui->closeButtonM, SIGNAL(clicked()), this, SLOT(closeButton()));
+    connect(ui->showButtonM, SIGNAL(clicked()), this, SLOT(showButton()));
+    connect(ui->hideButtonM, SIGNAL(clicked()), this, SLOT(hideButton()));
+    connect(ui->sendButton, SIGNAL(clicked()), this, SLOT(sendMessage()));
+
 }
 
 MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::sendMessage(){ //ЗАКОНЧИТЬ ВОТ ТУТ БОЛЕЕ ПРАВИЛЬНЫЕ ПЕРЕМЕННЫЕ И ТД
-    SendMessage date;
+void MainWindow::sendMessage(){
+    QUrl url("https://5889-95-105-74-45.ngrok-free.app/api/v1/new_msg/");
     QNetworkRequest messageRequest;
-    json date1;
-    date1 = date.reqdate();
-    QByteArray regdata;
-    regdata.append(date1.is_array());
+    messageRequest.setUrl(url);
+    QByteArray message;
+    Chat dateJson;
+
+    qDebug()<<dateJson.Chat::reqdate(ui->contactLabel->text().toUtf8().toStdString(), ui->logLine->text().toUtf8().toStdString(),ui->sendLine->text().toUtf8().toStdString());
+    message.append(
+        dateJson.Chat::reqdate(
+            ui->logLine->text().toStdString(),
+            ui->contactLabel->text().toStdString(),
+            ui->sendLine->text().toStdString()
+        )
+    );
     manager = new QNetworkAccessManager(this);
-    manager->post(messageRequest,regdata);
+    manager->post(messageRequest,message);
 
 }
 
@@ -76,9 +96,9 @@ void MainWindow::connectServer() {
     //создание объекта менеджера для работы с пост запросами
     conManager = new QNetworkAccessManager(this);
 
-    QUrl url("https://ec8d-95-105-74-45.ngrok-free.app/api/v1/sign_up/");
+    QUrl url1("https://5889-95-105-74-45.ngrok-free.app/api/v1/sign_up/");
     QNetworkRequest request;
-    request.setUrl(url);
+    request.setUrl(url1);
     request.setHeader( QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
 
     //settings.setValue("endpoint_url"," ");
@@ -103,7 +123,7 @@ void MainWindow::connectAnswer(QNetworkReply *reply) {
     ui->stackedWidget->setCurrentWidget(ui->mainChat);
 }
 
-void MainWindow::on_conButton_clicked() {
+void MainWindow::connectionButton() {
     QString userName = " ", password = " ", vPassword = " ";
     userName=ui->logLine->text();
     password=ui->passwordLine->text();
@@ -129,16 +149,16 @@ void MainWindow::on_conButton_clicked() {
     }
 }
 
-void MainWindow::on_closeButton_clicked() {
+void MainWindow::closeButton() {
     this->close();
 }
 
 
-void MainWindow::on_hideButton_clicked() {
+void MainWindow::hideButton() {
     this->showMinimized();
 }
 
-void MainWindow::on_showButton_clicked() {
+void MainWindow::showButton() {
     if(this->isFullScreen()) {
         this->showNormal();
     }

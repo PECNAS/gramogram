@@ -1,18 +1,18 @@
-QWidget#signUp QPushButton:hover {
-    background-color: #b3c8d3;
+QWidget#signUp, #mainChat {
+    background-image: url(D:/QT/mmm/css/IMG_2670.png);
+    background-position: center center;
 }
 
 QWidget#signUp QPushButton {
     background-color:#81a3b6;
-    border: 0px #FFFFFF solid;
+    border: 0px;
     color: #40273b;
     font-size: 20px;
     font-weight: bold;
 }
 
-QWidget#signUp{
-    background-image: url(D:/QT/mmm/css/backGround.png);
-    background-position: center center;
+QWidget#signUp QPushButton:hover {
+    background-color: #b3c8d3;
 }
 
 QWidget#signUp QLabel {
@@ -21,9 +21,20 @@ QWidget#signUp QLabel {
     font-size: 20px;
 }
 
-QWidget#signUp QLineEdit{
+QWidget#signUp QLineEdit {
     background-color:#81a3b6;
-    border: 0px #ffffff solid;
+    border: 0px;
     font-size: 20px;
     font-weight: bold;
 }
+QPushButton#sendButton{
+    background-image: url(D:/QT/mmm/css/send.png);
+    background-position: center center; 
+    border: 0px;
+}
+QFrame#mesFrame{
+    background-image: url(D:/QT/mmm/css/mesFrame.png);
+    background-position: center center; 
+    border: 0px;
+}
+

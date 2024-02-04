@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="mainChat">
      <widget class="QFrame" name="searchFrame">
@@ -55,12 +55,12 @@
         <string/>
        </property>
       </widget>
-      <widget class="QTextEdit" name="searchLine">
+      <widget class="QLineEdit" name="searchLine">
        <property name="geometry">
         <rect>
          <x>50</x>
          <y>20</y>
-         <width>141</width>
+         <width>140</width>
          <height>40</height>
         </rect>
        </property>
@@ -117,7 +117,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>МЕНЯ ЗОВУТ РОМА</string>
+        <string>ВЛАД БУБСОВ</string>
        </property>
       </widget>
       <widget class="QLabel" name="statusLabel">
@@ -137,7 +137,7 @@
        <property name="geometry">
         <rect>
          <x>510</x>
-         <y>20</y>
+         <y>30</y>
          <width>40</width>
          <height>40</height>
         </rect>
@@ -150,9 +150,9 @@
        <property name="geometry">
         <rect>
          <x>560</x>
-         <y>20</y>
+         <y>30</y>
          <width>30</width>
-         <height>40</height>
+         <height>41</height>
         </rect>
        </property>
        <property name="text">
@@ -210,7 +210,7 @@
        <rect>
         <x>200</x>
         <y>560</y>
-        <width>601</width>
+        <width>600</width>
         <height>40</height>
        </rect>
       </property>
@@ -220,16 +220,6 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QTextEdit" name="sendLine">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>5</y>
-         <width>480</width>
-         <height>30</height>
-        </rect>
-       </property>
-      </widget>
       <widget class="QPushButton" name="sticButton">
        <property name="geometry">
         <rect>
@@ -256,6 +246,65 @@
         <string/>
        </property>
       </widget>
+      <widget class="QLineEdit" name="sendLine">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>5</y>
+         <width>480</width>
+         <height>30</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="toolWidgetM" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>741</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="hideButtonM">
+      <property name="geometry">
+       <rect>
+        <x>740</x>
+        <y>0</y>
+        <width>22</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>x</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="closeButtonM">
+      <property name="geometry">
+       <rect>
+        <x>780</x>
+        <y>0</y>
+        <width>22</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>x</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="showButtonM">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>0</y>
+        <width>22</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>x</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="signUp">
