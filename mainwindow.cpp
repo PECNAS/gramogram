@@ -13,6 +13,10 @@
 #include <QPoint>
 #include <QMouseEvent>
 #include <QPalette>
+#include <QScrollArea>
+#include <QGroupBox>
+#include <QScrollBar>
+#include <QVBoxLayout>
 
 QString error[] = {
     "Username and/or password is not correct. Please try again.",
@@ -42,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
     ui->passwordLine->setEchoMode(QLineEdit::Password);
     ui->verPasswordLine->setEchoMode(QLineEdit::Password);
-    ui->stackedWidget->setCurrentWidget(ui->signUp);
+    ui->stackedWidget->setCurrentWidget(ui->mainChat);
 
     QFile style;
     style.setFileName("D:/QT/mmm/css/style.css");
@@ -50,6 +54,46 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     QString css = style.readAll();
     qApp->setStyleSheet(css);
 
+    int n=20;
+    QScrollArea *scroll = new QScrollArea;
+    scroll->setParent(ui->mainChat);
+    scroll->setGeometry(0,80,200,520);
+
+    QPalette palette;
+    palette.setBrush(this->backgroundRole(), QBrush(QPixmap("D:/QT/mmm/css/contactFrame.png")));
+    scroll->setPalette(palette);
+    scroll->setStyleSheet("border: none;");
+
+    QScrollBar scrollBar;
+    scrollBar.setParent(scroll);
+    scrollBar.setGeometry(185,0,15,520);
+
+    QWidget* allChats = new QWidget;
+    allChats->setParent(scroll);
+    allChats->setGeometry(0,0,183,n*60);
+
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->setContentsMargins(0,0,0,0);
+    layout->setAlignment(Qt::AlignTop);
+    layout->setDirection(QBoxLayout::TopToBottom);
+
+    for(int i=0;i<n;++i){
+        QFrame* chat = new QFrame;
+        chat->setParent(scroll);
+        chat->setObjectName("chat"+QString::number(n));
+        chat->setFixedSize(183,60);
+        chat->setStyleSheet("background-color: #7976A4;");
+        QLabel photo(chat);
+        photo.setGeometry(5,5,30,30);
+        photo.show();
+        chat->show();
+        layout->addWidget(chat);
+        qDebug()<<chat->isHidden();
+    }
+
+    allChats->setLayout(layout);
+    allChats->show();
+    scroll->setWidget(allChats);
 
     connect(this, SIGNAL(connectReady()), this, SLOT(connectServer()));
     connect(ui->conButton, SIGNAL(clicked()), this, SLOT(connectionButton()));
@@ -73,8 +117,6 @@ void MainWindow::sendMessage(){
     messageRequest.setUrl(url);
     QByteArray message;
     Chat dateJson;
-
-    qDebug()<<dateJson.Chat::reqdate(ui->contactLabel->text().toUtf8().toStdString(), ui->logLine->text().toUtf8().toStdString(),ui->sendLine->text().toUtf8().toStdString());
     message.append(
         dateJson.Chat::reqdate(
             ui->logLine->text().toStdString(),
@@ -99,7 +141,7 @@ void MainWindow::connectServer() {
     QUrl url1("https://5889-95-105-74-45.ngrok-free.app/api/v1/sign_up/");
     QNetworkRequest request;
     request.setUrl(url1);
-    request.setHeader( QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
     //settings.setValue("endpoint_url"," ");
     connect(conManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(connectAnswer(QNetworkReply*)));

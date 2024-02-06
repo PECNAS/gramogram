@@ -1,5 +1,5 @@
 QWidget#signUp, #mainChat {
-    background-image: url(D:/QT/mmm/css/IMG_2670.png);
+    background-image: url(D:/QT/mmm/css/backGround.png);
     background-position: center center;
 }
 
@@ -27,14 +27,36 @@ QWidget#signUp QLineEdit {
     font-size: 20px;
     font-weight: bold;
 }
+
 QPushButton#sendButton{
     background-image: url(D:/QT/mmm/css/send.png);
     background-position: center center; 
     border: 0px;
 }
+
 QFrame#mesFrame{
     background-image: url(D:/QT/mmm/css/mesFrame.png);
     background-position: center center; 
     border: 0px;
+}
+
+QFrame#infoFrame{
+    background-image: url(D:/QT/mmm/css/infoFrame.png);
+    background-position: center center; 
+    border: 0px;
+}
+/*
+QScrollArea#scroll{
+    background-image: url("D:/QT/mmm/css/contactFrame.png");
+}
+
+QFrame#chat{
+    background-color: #7976A4;
+}
+
+QLabel#photo{
+    background-image: url(D:/QT/mmm/css/busov.png);
+    background-position: center center;
+    border: none;
 }
 
