@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "chat.h"
-
 #include <QWidget>
 #include <QFile>
 #include <QDebug>
@@ -49,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->stackedWidget->setCurrentWidget(ui->mainChat);
 
     QFile style;
-    style.setFileName("D:/QT/mmm/css/style.css");
+    style.setFileName("D:/QT/messanger/css/style.css");
     style.open(QFile::ReadOnly);
     QString css = style.readAll();
     qApp->setStyleSheet(css);
@@ -72,11 +71,9 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     allChats->setParent(scroll);
     allChats->setGeometry(0,0,183,n*60);
 
-    QVBoxLayout* layout = new QVBoxLayout;
-    layout->setContentsMargins(0,0,0,0);
+    QVBoxLayout* layout = new QVBoxLayout(allChats);
     layout->setAlignment(Qt::AlignTop);
     layout->setDirection(QBoxLayout::TopToBottom);
-
     for(int i=0;i<n;++i){
         QFrame* chat = new QFrame;
         chat->setParent(scroll);
@@ -86,11 +83,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
         QLabel photo(chat);
         photo.setGeometry(5,5,30,30);
         photo.show();
-        chat->show();
         layout->addWidget(chat);
-        qDebug()<<chat->isHidden();
     }
-
     allChats->setLayout(layout);
     allChats->show();
     scroll->setWidget(allChats);
@@ -104,7 +98,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(ui->showButtonM, SIGNAL(clicked()), this, SLOT(showButton()));
     connect(ui->hideButtonM, SIGNAL(clicked()), this, SLOT(hideButton()));
     connect(ui->sendButton, SIGNAL(clicked()), this, SLOT(sendMessage()));
-
 }
 
 MainWindow::~MainWindow() {

@@ -1,7 +1,7 @@
 #ifndef CHAT_H
 #define CHAT_H
 
-#include "json.hpp"
+#include "json/json.hpp"
 #include <QTime>
 #include <QMainWindow>
 #include <QString>

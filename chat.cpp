@@ -1,5 +1,5 @@
 #include "chat.h"
-#include "json.hpp"
+#include "json/json.hpp"
 
 #include <QTime>
 
