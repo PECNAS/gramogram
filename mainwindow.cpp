@@ -40,15 +40,15 @@ QString sockets[] = {
     "You are already signed up, log in"
 };
 
-MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow),conManager(new QNetworkAccessManager(this)) {
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
     ui->passwordLine->setEchoMode(QLineEdit::Password);
     ui->verPasswordLine->setEchoMode(QLineEdit::Password);
-    ui->stackedWidget->setCurrentWidget(ui->mainChat);
+    ui->stackedWidget->setCurrentWidget(ui->signUp);
 
     QFile style;
-    style.setFileName("D:/QT/messanger/css/style.css");
+    style.setFileName("D:/QT/gram/css/style.css");
     style.open(QFile::ReadOnly);
     QString css = style.readAll();
     qApp->setStyleSheet(css);
@@ -70,26 +70,32 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     QWidget* allChats = new QWidget;
     allChats->setParent(scroll);
     allChats->setGeometry(0,0,183,n*60);
+    allChats->setPalette(palette);
 
     QVBoxLayout* layout = new QVBoxLayout(allChats);
     layout->setAlignment(Qt::AlignTop);
     layout->setDirection(QBoxLayout::TopToBottom);
+    layout->setSpacing(0);
+
     for(int i=0;i<n;++i){
         QFrame* chat = new QFrame;
         chat->setParent(scroll);
         chat->setObjectName("chat"+QString::number(n));
-        chat->setFixedSize(183,60);
-        chat->setStyleSheet("background-color: #7976A4;");
+        chat->setFixedSize(185,60);
+        chat->setStyleSheet("background-color: rgba(200,0,0,0.5);");
         QLabel photo(chat);
-        photo.setGeometry(5,5,30,30);
-        photo.show();
+        photo.setParent(chat);
+        photo.setPixmap(QPixmap("D:/QT/gram/css/busov.png"));
+        photo.setGeometry(5,5,30,50);
         layout->addWidget(chat);
     }
+    layout->setContentsMargins(0,0,0,0);
     allChats->setLayout(layout);
     allChats->show();
     scroll->setWidget(allChats);
 
     connect(this, SIGNAL(connectReady()), this, SLOT(connectServer()));
+    connect(this, SIGNAL(connectDone()), this, SLOT(connectAnswer()));
     connect(ui->conButton, SIGNAL(clicked()), this, SLOT(connectionButton()));
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(closeButton()));
     connect(ui->showButton, SIGNAL(clicked()), this, SLOT(showButton()));
@@ -104,47 +110,10 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::sendMessage(){
-    QUrl url("https://5889-95-105-74-45.ngrok-free.app/api/v1/new_msg/");
-    QNetworkRequest messageRequest;
-    messageRequest.setUrl(url);
-    QByteArray message;
-    Chat dateJson;
-    message.append(
-        dateJson.Chat::reqdate(
-            ui->logLine->text().toStdString(),
-            ui->contactLabel->text().toStdString(),
-            ui->sendLine->text().toStdString()
-        )
-    );
-    manager = new QNetworkAccessManager(this);
-    manager->post(messageRequest,message);
-
-}
-
-void MainWindow::connectServer() {
-    QByteArray regdata;
-    regdata.append("username="+ui->logLine->text().toUtf8());
-    regdata.append("&");
-    regdata.append("password="+ui->passwordLine->text().toUtf8());
-
-    //создание объекта менеджера для работы с пост запросами
-    conManager = new QNetworkAccessManager(this);
-
-    QUrl url1("https://5889-95-105-74-45.ngrok-free.app/api/v1/sign_up/");
-    QNetworkRequest request;
-    request.setUrl(url1);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    //settings.setValue("endpoint_url"," ");
-    connect(conManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(connectAnswer(QNetworkReply*)));
-    conManager->post(request,regdata);
-}
-
-void MainWindow::connectAnswer(QNetworkReply *reply) {
-    QByteArray answer = reply->readAll();
+void MainWindow::connectAnswer() {
+    Chat chat;
+    QString answer = chat.backData;
     qDebug()<<answer;
-    reply->close();
     if(answer == sockets[1]){
         ui->conLabel->setText(sockets[1]);
     }
@@ -155,7 +124,7 @@ void MainWindow::connectAnswer(QNetworkReply *reply) {
         ui->stackedWidget->setCurrentWidget(ui->mainChat);
         qDebug()<<debug[0];
     }
-    ui->stackedWidget->setCurrentWidget(ui->mainChat);
+    //ui->stackedWidget->setCurrentWidget(ui->mainChat);
 }
 
 void MainWindow::connectionButton() {

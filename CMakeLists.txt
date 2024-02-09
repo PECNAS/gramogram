@@ -1,18 +1,22 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(messanger VERSION 0.1 LANGUAGES CXX)
+project(gram VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt6 REQUIRED COMPONENTS Network)
 
+set(MSYS2_ROOT "C:/msys64")
+set(CURL_LIBRARY_DIRS "${MSYS2_ROOT}/mingw64/lib")
+set(CURL_INCLUDE_DIRS "${MSYS2_ROOT}/mingw64/include/curl")
+find_package(CURL REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -22,44 +26,40 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(messanger
+    qt_add_executable(gram
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         chat.h chat.cpp
+        css/backGround.png css/busov.png css/contactFrame.png css/infoFrame.png css/infoFrame1.png css/mesFrame.png css/send.png css/style.css json/json.hpp json/json_fwd.hpp
+        mainwindow.ui
     )
-
 else()
     if(ANDROID)
-        add_library(messanger SHARED
+        add_library(gram SHARED
             ${PROJECT_SOURCES}
         )
-        add_executable(messanger
+    else()
+        add_executable(gram
             ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
-set(CURL_LIBRARY "C:/vcpkg/installed/x64-windows/bin/libcul.dll ")
-set(CURL_INCLUDE_DIRS "C:/vcpkg/installed/x64-windows/include")
-set(CURL_LIBRARIES "C:/vcpkg/installed/x64-windows/lib")
-find_package(CURL REQUIRED)
-#if(CURL_FOUND)
-#    include_directories(${CURL_INCLUDE_DIRS})
-#    target_link_libraries(messanger ${CURL_LIBRARIES})
-#else()
-#    message(FATAL_ERROR "Не удалось найти библиотеку CURL")
-#endif()
+target_link_libraries(gram PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(gram PRIVATE Qt6::Network)
 
-target_include_directories(messanger PUBLIC ${CURL_INCLUDE_DIRS})
-target_link_libraries(messanger ${CURL_LIBRARIES})
-
-target_link_libraries(messanger PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(messanger PRIVATE Qt${QT_VERSION_MAJOR}::Network)
+if(CURL_FOUND)
+    include_directories(${CURL_INCLUDE_DIRS})
+    target_link_libraries(gram PUBLIC ${CURL_LIBRARIES})
+    message("CURL is found")
+else()
+    message(FATAL_ERROR "libcurl not found")
+endif()
 
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.messanger)
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.gram)
 endif()
-set_target_properties(messanger PROPERTIES
+set_target_properties(gram PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -68,13 +68,12 @@ set_target_properties(messanger PROPERTIES
 )
 
 include(GNUInstallDirs)
-install(TARGETS messanger
+install(TARGETS gram
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(messanger)
+    qt_finalize_executable(gram)
 endif()
-
